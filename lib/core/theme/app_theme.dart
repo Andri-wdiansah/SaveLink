@@ -11,7 +11,7 @@ ThemeData darkGlassTheme() {
     ),
     scaffoldBackgroundColor: AppColors.deepNavy,
     cardTheme: CardThemeData(
-      color: AppColors.darkSurface.withOpacity(0.65),
+      color: AppColors.darkSurface.withValues(alpha: 0.65),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(color: AppColors.glassBorder, width: 1),
@@ -45,10 +45,10 @@ ThemeData lightGlassTheme() {
     ),
     scaffoldBackgroundColor: AppColors.pearl,
     cardTheme: CardThemeData(
-      color: AppColors.lightSurface.withOpacity(0.7),
+      color: AppColors.lightSurface.withValues(alpha: 0.7),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: AppColors.glassBorder.withOpacity(0.5), width: 1),
+        side: BorderSide(color: AppColors.glassBorder.withValues(alpha: 0.5), width: 1),
       ),
     ),
     appBarTheme: const AppBarTheme(
