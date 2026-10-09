@@ -7,11 +7,10 @@ ThemeData darkGlassTheme() {
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.violetAccent,
       brightness: Brightness.dark,
-      background: AppColors.deepNavy,
       surface: AppColors.darkSurface,
     ),
     scaffoldBackgroundColor: AppColors.deepNavy,
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: AppColors.darkSurface.withOpacity(0.65),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -23,8 +22,8 @@ ThemeData darkGlassTheme() {
       elevation: 0,
       foregroundColor: AppColors.textPrimaryDark,
     ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: AppColors.darkSurface.withOpacity(0.8),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Color(0x66141828),
       selectedItemColor: AppColors.violetAccent,
       unselectedItemColor: AppColors.textSecondaryDark,
     ),
@@ -42,11 +41,10 @@ ThemeData lightGlassTheme() {
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.violetAccent,
       brightness: Brightness.light,
-      background: AppColors.pearl,
       surface: AppColors.lightSurface,
     ),
     scaffoldBackgroundColor: AppColors.pearl,
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: AppColors.lightSurface.withOpacity(0.7),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),

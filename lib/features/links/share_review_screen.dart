@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/link_item.dart';
-import '../core/utils/validators.dart';
+import '../../core/utils/validators.dart';
 
 class ShareReviewScreen extends StatefulWidget {
   final String? url;
