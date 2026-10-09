@@ -11,10 +11,17 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         children: [
-          ListTile(title: const Text('Theme'), subtitle: const Text('System, Light, Dark')),
-          RadioListTile<ThemeMode>(title: const Text('System'), value: ThemeMode.system, groupValue: theme, onChanged: (v) => v != null ? ref.read(themePreferenceProvider.notifier).setTheme(v) : null),
-          RadioListTile<ThemeMode>(title: const Text('Light'), value: ThemeMode.light, groupValue: theme, onChanged: (v) => v != null ? ref.read(themePreferenceProvider.notifier).setTheme(v) : null),
-          RadioListTile<ThemeMode>(title: const Text('Dark'), value: ThemeMode.dark, groupValue: theme, onChanged: (v) => v != null ? ref.read(themePreferenceProvider.notifier).setTheme(v) : null),
+          const ListTile(title: Text('Theme'), subtitle: Text('System, Light, Dark')),
+          RadioGroup<ThemeMode>(
+            value: theme,
+            onChanged: (ThemeMode? v) {
+              if (v != null) ref.read(themePreferenceProvider.notifier).setTheme(v);
+            },
+            options: ThemeMode.values,
+            labelBuilder: (ThemeMode mode) {
+              return Text(mode.name == 'ThemeMode.system' ? 'System' : mode.name == 'ThemeMode.light' ? 'Light' : 'Dark');
+            },
+          ),
           const Divider(),
           const ListTile(title: Text('Data'), subtitle: Text('All data is stored locally on your device. Google Drive backup will come in a future phase.')),
           const ListTile(title: Text('App'), subtitle: Text('SaveLink by domoiki v1.0.0')),
