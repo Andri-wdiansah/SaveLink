@@ -13,14 +13,27 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           const ListTile(title: Text('Theme'), subtitle: Text('System, Light, Dark')),
           RadioGroup<ThemeMode>(
-            value: theme,
+            groupValue: theme,
             onChanged: (ThemeMode? v) {
               if (v != null) ref.read(themePreferenceProvider.notifier).setTheme(v);
             },
-            options: ThemeMode.values,
-            labelBuilder: (ThemeMode mode) {
-              return Text(mode.name == 'ThemeMode.system' ? 'System' : mode.name == 'ThemeMode.light' ? 'Light' : 'Dark');
-            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RadioListTile<ThemeMode>(
+                  title: const Text('System'),
+                  value: ThemeMode.system,
+                ),
+                RadioListTile<ThemeMode>(
+                  title: const Text('Light'),
+                  value: ThemeMode.light,
+                ),
+                RadioListTile<ThemeMode>(
+                  title: const Text('Dark'),
+                  value: ThemeMode.dark,
+                ),
+              ],
+            ),
           ),
           const Divider(),
           const ListTile(title: Text('Data'), subtitle: Text('All data is stored locally on your device. Google Drive backup will come in a future phase.')),
