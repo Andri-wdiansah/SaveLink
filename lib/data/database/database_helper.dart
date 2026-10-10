@@ -1,54 +1,122 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../../models/link_item.dart';
 import '../../models/note_item.dart';
 import '../../models/collection_item.dart';
 
+/// SQLite access layer. The schema is created on first launch (version 1) and
+/// every read is ordered so the newest items come first.
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
-  static Database? _database;
-  DatabaseHelper._init();
-  Future<Database> get database async => _database ??= await _initDB('savelink.db');
+
+  final String fileName;
+  Database? _database;
+
+  DatabaseHelper._init() : fileName = 'savelink.db';
+
+  /// Isolated helper for tests: same schema, own database file.
+  @visibleForTesting
+  DatabaseHelper.forTesting(this.fileName);
+
+  Future<Database> get database async => _database ??= await _initDB(fileName);
+
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
     return await openDatabase(path, version: 1, onCreate: _createDB);
   }
-  Future _createDB(Database db, int version) async {
-    await db.execute('CREATE TABLE links (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT, description TEXT DEFAULT \'\', tags TEXT DEFAULT \'\', collection_id INTEGER, favorite INTEGER DEFAULT 0, pinned INTEGER DEFAULT 0, archived INTEGER DEFAULT 0, created_at TEXT, updated_at TEXT)');
-    await db.execute('CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, content TEXT, tags TEXT DEFAULT \'\', collection_id INTEGER, favorite INTEGER DEFAULT 0, pinned INTEGER DEFAULT 0, archived INTEGER DEFAULT 0, created_at TEXT, updated_at TEXT)');
-    await db.execute('CREATE TABLE tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, created_at TEXT)');
-    await db.execute('CREATE TABLE collections (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT DEFAULT \'\', created_at TEXT, updated_at TEXT)');
+
+  Future<void> _createDB(Database db, int version) async {
+    await db.execute(
+        'CREATE TABLE links (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT, description TEXT DEFAULT \'\', tags TEXT DEFAULT \'\', collection_id INTEGER, favorite INTEGER DEFAULT 0, pinned INTEGER DEFAULT 0, archived INTEGER DEFAULT 0, created_at TEXT, updated_at TEXT)');
+    await db.execute(
+        'CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, content TEXT, tags TEXT DEFAULT \'\', collection_id INTEGER, favorite INTEGER DEFAULT 0, pinned INTEGER DEFAULT 0, archived INTEGER DEFAULT 0, created_at TEXT, updated_at TEXT)');
+    await db.execute(
+        'CREATE TABLE tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, created_at TEXT)');
+    await db.execute(
+        'CREATE TABLE collections (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT DEFAULT \'\', created_at TEXT, updated_at TEXT)');
   }
-  Future<int> insertLink(LinkItem item) async => (await instance.database).insert('links', item.toMap());
-  Future<List<LinkItem>> getLinks({bool? archived}) async => (await (await instance.database).query('links', where: archived == null ? null : 'archived = ?', whereArgs: archived == null ? null : [archived ? 1 : 0])).map((m) => LinkItem.fromMap(m)).toList();
-  Future<int> updateLink(LinkItem item) async => (await instance.database).update('links', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
-  Future<int> deleteLink(int id) async => (await instance.database).delete('links', where: 'id = ?', whereArgs: [id]);
-  Future<int> insertNote(NoteItem item) async => (await instance.database).insert('notes', item.toMap());
-  Future<List<NoteItem>> getNotes({bool? archived}) async => (await (await instance.database).query('notes', where: archived == null ? null : 'archived = ?', whereArgs: archived == null ? null : [archived ? 1 : 0])).map((m) => NoteItem.fromMap(m)).toList();
-  Future<int> updateNote(NoteItem item) async => (await instance.database).update('notes', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
-  Future<int> deleteNote(int id) async => (await instance.database).delete('notes', where: 'id = ?', whereArgs: [id]);
-  Future<int> insertCollection(CollectionItem item) async => (await instance.database).insert('collections', item.toMap());
-  Future<List<CollectionItem>> getCollections() async => (await (await instance.database).query('collections')).map((m) => CollectionItem.fromMap(m)).toList();
-  Future<int> updateCollection(CollectionItem item) async => (await instance.database).update('collections', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+
+  static const String _linkOrder = 'updated_at DESC, id DESC';
+  static const String _noteOrder = 'updated_at DESC, id DESC';
+
+  Future<int> insertLink(LinkItem item) async =>
+      (await database).insert('links', item.toMap());
+
+  Future<List<LinkItem>> getLinks({bool? archived}) async =>
+      (await (await database).query('links',
+              where: archived == null ? null : 'archived = ?',
+              whereArgs: archived == null ? null : [archived ? 1 : 0],
+              orderBy: _linkOrder))
+          .map(LinkItem.fromMap)
+          .toList();
+
+  Future<int> updateLink(LinkItem item) async => (await database)
+      .update('links', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+
+  Future<int> deleteLink(int id) async =>
+      (await database).delete('links', where: 'id = ?', whereArgs: [id]);
+
+  Future<int> insertNote(NoteItem item) async =>
+      (await database).insert('notes', item.toMap());
+
+  Future<List<NoteItem>> getNotes({bool? archived}) async =>
+      (await (await database).query('notes',
+              where: archived == null ? null : 'archived = ?',
+              whereArgs: archived == null ? null : [archived ? 1 : 0],
+              orderBy: _noteOrder))
+          .map(NoteItem.fromMap)
+          .toList();
+
+  Future<int> updateNote(NoteItem item) async => (await database)
+      .update('notes', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+
+  Future<int> deleteNote(int id) async =>
+      (await database).delete('notes', where: 'id = ?', whereArgs: [id]);
+
+  Future<int> insertCollection(CollectionItem item) async =>
+      (await database).insert('collections', item.toMap());
+
+  Future<List<CollectionItem>> getCollections() async => (await (await database)
+          .query('collections', orderBy: 'name COLLATE NOCASE ASC, id ASC'))
+      .map(CollectionItem.fromMap)
+      .toList();
+
+  Future<int> updateCollection(CollectionItem item) async =>
+      (await database).update('collections', item.toMap(),
+          where: 'id = ?', whereArgs: [item.id]);
+
+  /// Deleting a collection keeps its items: they simply become unassigned.
   Future<int> deleteCollection(int id) async {
-    final db = await instance.database;
-    await db.update('links', {'collection_id': null}, where: 'collection_id = ?', whereArgs: [id]);
-    await db.update('notes', {'collection_id': null}, where: 'collection_id = ?', whereArgs: [id]);
+    final db = await database;
+    await db.update('links', {'collection_id': null},
+        where: 'collection_id = ?', whereArgs: [id]);
+    await db.update('notes', {'collection_id': null},
+        where: 'collection_id = ?', whereArgs: [id]);
     return await db.delete('collections', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<List<LinkItem>> searchLinks(String query) async {
-    final db = await instance.database;
+    final db = await database;
     final like = '%$query%';
-    final results = await db.query('links', where: 'title LIKE ? OR url LIKE ? OR description LIKE ? OR tags LIKE ?', whereArgs: [like, like, like, like]);
-    return results.map((m) => LinkItem.fromMap(m)).toList();
+    final results = await db.query('links',
+        where:
+            'title LIKE ? OR url LIKE ? OR description LIKE ? OR tags LIKE ?',
+        whereArgs: [like, like, like, like],
+        orderBy: _linkOrder);
+    return results.map(LinkItem.fromMap).toList();
   }
+
   Future<List<NoteItem>> searchNotes(String query) async {
-    final db = await instance.database;
+    final db = await database;
     final like = '%$query%';
-    final results = await db.query('notes', where: 'title LIKE ? OR content LIKE ? OR tags LIKE ?', whereArgs: [like, like, like]);
-    return results.map((m) => NoteItem.fromMap(m)).toList();
+    final results = await db.query('notes',
+        where: 'title LIKE ? OR content LIKE ? OR tags LIKE ?',
+        whereArgs: [like, like, like],
+        orderBy: _noteOrder);
+    return results.map(NoteItem.fromMap).toList();
   }
-  Future close() async => (await instance.database).close();
+
+  Future<void> close() async => (await database).close();
 }

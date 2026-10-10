@@ -34,3 +34,4 @@ android/key.properties
 
 # CMake
 cmake-build-debug/
+android/.kotlin/

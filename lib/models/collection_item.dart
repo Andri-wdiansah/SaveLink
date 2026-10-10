@@ -14,18 +14,18 @@ class CollectionItem {
   });
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'name': name,
-    'description': description,
-    'created_at': createdAt,
-    'updated_at': updatedAt,
-  };
+        'id': id,
+        'name': name,
+        'description': description,
+        'created_at': createdAt,
+        'updated_at': updatedAt,
+      };
 
   factory CollectionItem.fromMap(Map<String, dynamic> m) => CollectionItem(
-    id: m['id'] as int?,
-    name: m['name'] as String,
-    description: m['description'] as String,
-    createdAt: m['created_at'] as String,
-    updatedAt: m['updated_at'] as String,
-  );
+        id: m['id'] as int?,
+        name: (m['name'] as String?) ?? '',
+        description: (m['description'] as String?) ?? '',
+        createdAt: (m['created_at'] as String?) ?? '',
+        updatedAt: (m['updated_at'] as String?) ?? '',
+      );
 }
