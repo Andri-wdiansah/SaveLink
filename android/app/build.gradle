@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace "io.github.domoiki.savelink"
-    compileSdk 36
+    compileSdk 37
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -20,7 +20,7 @@ android {
     defaultConfig {
         applicationId "io.github.domoiki.savelink"
         minSdk 24
-        targetSdk 36
+        targetSdk 37
         versionCode 1
         versionName "1.0.0"
     }
