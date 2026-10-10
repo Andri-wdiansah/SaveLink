@@ -53,7 +53,19 @@ class LinkItem {
     updatedAt: m['updated_at'] as String,
   );
 
-  LinkItem copyWith({bool? archived, bool? favorite, bool? pinned, String? title, String? url, String? description, String? tags, int? collectionId}) => LinkItem(
+  LinkItem copyWith({bool? archived, bool? favorite, bool? pinned, String? title, String? url, String? description, String? tags, int? collectionId, String? updatedAt}) => LinkItem(
+    id: id,
+    title: title ?? this.title,
+    url: url ?? this.url,
+    description: description ?? this.description,
+    tags: tags ?? this.tags,
+    collectionId: collectionId ?? this.collectionId,
+    favorite: favorite ?? this.favorite,
+    pinned: pinned ?? this.pinned,
+    archived: archived ?? this.archived,
+    createdAt: createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
     id: id,
     title: title ?? this.title,
     url: url ?? this.url,
