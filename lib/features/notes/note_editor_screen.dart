@@ -82,6 +82,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
       showErrorSnackBar(context, error);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final collections = ref.watch(collectionsProvider);
@@ -184,4 +185,3 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
     );
   }
 }
-

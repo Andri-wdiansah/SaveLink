@@ -89,6 +89,7 @@ class _LinkEditorScreenState extends ConsumerState<LinkEditorScreen> {
       showErrorSnackBar(context, error);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final collections = ref.watch(collectionsProvider);
@@ -207,4 +208,3 @@ class _LinkEditorScreenState extends ConsumerState<LinkEditorScreen> {
     );
   }
 }
-

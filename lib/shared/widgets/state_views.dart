@@ -53,7 +53,8 @@ class EmptyStateView extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: scheme.primary.withValues(alpha: 0.12),
-                border: Border.all(color: scheme.primary.withValues(alpha: 0.25)),
+                border:
+                    Border.all(color: scheme.primary.withValues(alpha: 0.25)),
               ),
               child: Icon(icon, size: 48, color: scheme.primary),
             ),

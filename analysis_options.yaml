@@ -1,0 +1,16 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    # Local-only toolchain (Flutter SDK/JDK/Android SDK) used for verification.
+    - .toolchain/**
+    - build/**
+    - android/**
+  errors:
+    # Missing awaits / unused results are real bugs in this app.
+    unawaited_futures: warning
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_final_locals: true

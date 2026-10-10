@@ -14,7 +14,7 @@ ThemeData darkGlassTheme() {
       color: AppColors.darkSurface.withValues(alpha: 0.65),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: AppColors.glassBorder, width: 1),
+        side: const BorderSide(color: AppColors.glassBorder, width: 1),
       ),
     ),
     appBarTheme: const AppBarTheme(
@@ -30,7 +30,10 @@ ThemeData darkGlassTheme() {
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: AppColors.textPrimaryDark),
       bodyMedium: TextStyle(color: AppColors.textSecondaryDark),
-      titleLarge: TextStyle(color: AppColors.textPrimaryLight, fontWeight: FontWeight.bold, fontSize: 24),
+      titleLarge: TextStyle(
+          color: AppColors.textPrimaryLight,
+          fontWeight: FontWeight.bold,
+          fontSize: 24),
     ),
   );
 }
@@ -48,7 +51,8 @@ ThemeData lightGlassTheme() {
       color: AppColors.lightSurface.withValues(alpha: 0.7),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: AppColors.glassBorder.withValues(alpha: 0.5), width: 1),
+        side: BorderSide(
+            color: AppColors.glassBorder.withValues(alpha: 0.5), width: 1),
       ),
     ),
     appBarTheme: const AppBarTheme(
@@ -64,7 +68,10 @@ ThemeData lightGlassTheme() {
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: AppColors.textPrimaryLight),
       bodyMedium: TextStyle(color: AppColors.textSecondaryLight),
-      titleLarge: TextStyle(color: AppColors.textPrimaryLight, fontWeight: FontWeight.bold, fontSize: 24),
+      titleLarge: TextStyle(
+          color: AppColors.textPrimaryLight,
+          fontWeight: FontWeight.bold,
+          fontSize: 24),
     ),
   );
 }

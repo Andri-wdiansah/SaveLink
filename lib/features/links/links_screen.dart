@@ -28,12 +28,14 @@ class _LinksScreenState extends ConsumerState<LinksScreen> {
     );
     if (saved == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(existing == null ? 'Link saved' : 'Link updated')),
+        SnackBar(
+            content: Text(existing == null ? 'Link saved' : 'Link updated')),
       );
     }
   }
 
-  Future<void> _toggleFlag(LinkItem item, {bool? favorite, bool? archived}) async {
+  Future<void> _toggleFlag(LinkItem item,
+      {bool? favorite, bool? archived}) async {
     final repo = ref.read(appRepositoryProvider);
     try {
       await repo.updateLink(
@@ -183,8 +185,10 @@ class _LinksScreenState extends ConsumerState<LinksScreen> {
                       _LinkFilter.archived =>
                         'Archived links are hidden from the main list but never deleted.',
                     },
-                    actionLabel: _filter == _LinkFilter.all ? 'Add a link' : null,
-                    onAction: _filter == _LinkFilter.all ? () => _openEditor() : null,
+                    actionLabel:
+                        _filter == _LinkFilter.all ? 'Add a link' : null,
+                    onAction:
+                        _filter == _LinkFilter.all ? () => _openEditor() : null,
                   );
                 }
                 return ListView.builder(
