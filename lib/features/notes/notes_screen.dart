@@ -110,6 +110,8 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openEditor(),
+        // Tabs live in an IndexedStack, so every FAB needs its own hero tag.
+        heroTag: 'notes-fab',
         icon: const Icon(Icons.add),
         label: const Text('New note'),
       ),

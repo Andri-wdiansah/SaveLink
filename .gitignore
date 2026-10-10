@@ -33,4 +33,4 @@ android/key.properties
 *.keystore
 
 # CMake
-cmake-build-debug/
+cmake-build-debug/android/.kotlin/

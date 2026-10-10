@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../../models/link_item.dart';
@@ -8,11 +9,17 @@ import '../../models/collection_item.dart';
 /// every read is ordered so the newest items come first.
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
-  static Database? _database;
-  DatabaseHelper._init();
 
-  Future<Database> get database async =>
-      _database ??= await _initDB('savelink.db');
+  final String fileName;
+  Database? _database;
+
+  DatabaseHelper._init() : fileName = 'savelink.db';
+
+  /// Isolated helper for tests: same schema, own database file.
+  @visibleForTesting
+  DatabaseHelper.forTesting(this.fileName);
+
+  Future<Database> get database async => _database ??= await _initDB(fileName);
 
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
@@ -35,55 +42,54 @@ class DatabaseHelper {
   static const String _noteOrder = 'updated_at DESC, id DESC';
 
   Future<int> insertLink(LinkItem item) async =>
-      (await instance.database).insert('links', item.toMap());
+      (await database).insert('links', item.toMap());
 
   Future<List<LinkItem>> getLinks({bool? archived}) async =>
-      (await (await instance.database).query('links',
+      (await (await database).query('links',
               where: archived == null ? null : 'archived = ?',
               whereArgs: archived == null ? null : [archived ? 1 : 0],
               orderBy: _linkOrder))
           .map(LinkItem.fromMap)
           .toList();
 
-  Future<int> updateLink(LinkItem item) async => (await instance.database)
+  Future<int> updateLink(LinkItem item) async => (await database)
       .update('links', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
 
-  Future<int> deleteLink(int id) async => (await instance.database)
-      .delete('links', where: 'id = ?', whereArgs: [id]);
+  Future<int> deleteLink(int id) async =>
+      (await database).delete('links', where: 'id = ?', whereArgs: [id]);
 
   Future<int> insertNote(NoteItem item) async =>
-      (await instance.database).insert('notes', item.toMap());
+      (await database).insert('notes', item.toMap());
 
   Future<List<NoteItem>> getNotes({bool? archived}) async =>
-      (await (await instance.database).query('notes',
+      (await (await database).query('notes',
               where: archived == null ? null : 'archived = ?',
               whereArgs: archived == null ? null : [archived ? 1 : 0],
               orderBy: _noteOrder))
           .map(NoteItem.fromMap)
           .toList();
 
-  Future<int> updateNote(NoteItem item) async => (await instance.database)
+  Future<int> updateNote(NoteItem item) async => (await database)
       .update('notes', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
 
-  Future<int> deleteNote(int id) async => (await instance.database)
-      .delete('notes', where: 'id = ?', whereArgs: [id]);
+  Future<int> deleteNote(int id) async =>
+      (await database).delete('notes', where: 'id = ?', whereArgs: [id]);
 
   Future<int> insertCollection(CollectionItem item) async =>
-      (await instance.database).insert('collections', item.toMap());
+      (await database).insert('collections', item.toMap());
 
-  Future<List<CollectionItem>> getCollections() async =>
-      (await (await instance.database)
-              .query('collections', orderBy: 'name COLLATE NOCASE ASC, id ASC'))
-          .map(CollectionItem.fromMap)
-          .toList();
+  Future<List<CollectionItem>> getCollections() async => (await (await database)
+          .query('collections', orderBy: 'name COLLATE NOCASE ASC, id ASC'))
+      .map(CollectionItem.fromMap)
+      .toList();
 
   Future<int> updateCollection(CollectionItem item) async =>
-      (await instance.database).update('collections', item.toMap(),
+      (await database).update('collections', item.toMap(),
           where: 'id = ?', whereArgs: [item.id]);
 
   /// Deleting a collection keeps its items: they simply become unassigned.
   Future<int> deleteCollection(int id) async {
-    final db = await instance.database;
+    final db = await database;
     await db.update('links', {'collection_id': null},
         where: 'collection_id = ?', whereArgs: [id]);
     await db.update('notes', {'collection_id': null},
@@ -92,7 +98,7 @@ class DatabaseHelper {
   }
 
   Future<List<LinkItem>> searchLinks(String query) async {
-    final db = await instance.database;
+    final db = await database;
     final like = '%$query%';
     final results = await db.query('links',
         where:
@@ -103,7 +109,7 @@ class DatabaseHelper {
   }
 
   Future<List<NoteItem>> searchNotes(String query) async {
-    final db = await instance.database;
+    final db = await database;
     final like = '%$query%';
     final results = await db.query('notes',
         where: 'title LIKE ? OR content LIKE ? OR tags LIKE ?',
@@ -112,5 +118,5 @@ class DatabaseHelper {
     return results.map(NoteItem.fromMap).toList();
   }
 
-  Future<void> close() async => (await instance.database).close();
+  Future<void> close() async => (await database).close();
 }

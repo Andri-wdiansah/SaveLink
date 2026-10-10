@@ -19,6 +19,29 @@ A polished personal link and notes manager built with Flutter. Works fully offli
 - SQLite via sqflite
 - Riverpod state management
 
+## Project layout
+```
+lib/
+  app.dart                             app shell + bottom navigation
+  data/database/database_helper.dart   SQLite schema and queries
+  data/repositories/repository.dart    repository facade used by the UI
+  data/providers/app_providers.dart    Riverpod providers (repository, lists)
+  features/home|links|notes|collections|search|settings
+  shared/widgets                       loading / empty / error states, cards
+  shared/components                    Android share-intent handling
+```
+
+Each list screen reads its data from a `FutureProvider` that calls the
+repository and renders one of three states: loading, error (with the real error
+message plus a retry button) or content (with an empty state when the database
+has no rows). Writes go through the repository and then invalidate the providers
+so every tab sees the new data.
+
+## Tests
+- `flutter test` runs widget tests for every screen (empty, loading, error and
+  CRUD flows) plus SQLite round-trip tests through `sqflite_common_ffi`.
+- `flutter analyze` is expected to report no issues.
+
 ## Build and Development
 This repository supports GitHub Codespaces and GitHub Actions for cloud-based development and APK builds.
 

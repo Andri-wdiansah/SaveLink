@@ -130,6 +130,8 @@ class _LinksScreenState extends ConsumerState<LinksScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openEditor(),
+        // Tabs live in an IndexedStack, so every FAB needs its own hero tag.
+        heroTag: 'links-fab',
         icon: const Icon(Icons.add),
         label: const Text('New link'),
       ),

@@ -74,8 +74,10 @@ class _CollectionsScreenState extends ConsumerState<CollectionsScreen> {
   @override
   Widget build(BuildContext context) {
     final collections = ref.watch(collectionsProvider);
-    final links = ref.watch(linksProvider).value ?? const <LinkItem>[];
-    final notes = ref.watch(notesProvider).value ?? const <NoteItem>[];
+    // valueOrNull (not value) so a failing links/notes query cannot take the
+    // whole screen down; the collections query itself drives the error state.
+    final links = ref.watch(linksProvider).valueOrNull ?? const <LinkItem>[];
+    final notes = ref.watch(notesProvider).valueOrNull ?? const <NoteItem>[];
 
     return Scaffold(
       appBar: AppBar(
@@ -90,6 +92,8 @@ class _CollectionsScreenState extends ConsumerState<CollectionsScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openEditor(),
+        // Tabs live in an IndexedStack, so every FAB needs its own hero tag.
+        heroTag: 'collections-fab',
         icon: const Icon(Icons.create_new_folder_outlined),
         label: const Text('New'),
       ),
